@@ -1,7 +1,7 @@
-CC5X Version 3.4D, Copyright (c) B Knudsen Data, Norway 1992-2010
+CC5X Version 3.5C, Copyright (c) B Knudsen Data, Norway 1992-2015
  --> FREE edition, 8-16 bit int, 24 bit float, 32k code, reduced optim.
-D:\projekte\picsel\autosenseo\autosen.c:
- 29. Jan 2015  22:05
+C:\Eigene_Dateien\pic\autosenseo\autosen.c:
+ 11. Aug 2015  11:06
  Chip = 10F202
  RAM: 00h : -------- =.....2. ....**** ********
 RAM usage: 12 bytes (1 local), 12 bytes free

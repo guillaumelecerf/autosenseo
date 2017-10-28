@@ -1,1 +1,1 @@
-D:\projekte\picsel\cc5x\cc5x.exe D:\projekte\picsel\autosenseo\autosen.c -ID:\projekte\picsel\autosenseo\ -aautosen.ASM -u -V
+C:\Eigene_Dateien\pic\cc5x\cc5x.exe C:\Eigene_Dateien\pic\autosenseo\autosen.c -IC:\Eigene_Dateien\pic\autosenseo\ -aautosen.ASM -u -V

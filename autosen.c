@@ -11,22 +11,22 @@
 /*                                                                  */
 /*     debounce routine by peter dannegger                          */
 /*                                                                  */
-/* V1.0 Erstausgabe                                                 */
-/* V1.1 activated internal PUs, earlier Portinit for stability      */
-/* V1.2 Extrazeit nach doppelklick fuer Off-Timer                   */
+/* V1.0  Erstausgabe                                                */
+/* V1.1  activated internal PUs, earlier Portinit for stability     */
+/* V1.2  Extrazeit nach doppelklick fuer Off-Timer                  */
+/* V1.2a Config-Bits jetzt enthalten                                */
 /*                                                                  */
 /*                                                                  */
 
 
-#include <D:\projekte\picsel\cc5\10F202.h>
-
-
-//#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
+//#include <D:\projekte\picsel\cc5\10F202.h>
+#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
 
 
 
-//#pragma config = 0x00C
-// WD aktiv, kein ext. Reset, keine CP -> im Brenner gesetzt
+#pragma config = 0x00D
+// WD aktiv, kein ext. Reset, keine CP -> im Brenner gesetzt, INTRC=ON
+// undokumentiert: Bit0 ist das "INTRC"-Bit, das gesetzt sein muss, sonst meldet der Programmer einen Fehler!
 
 // Defines fuer Status
 #define BEGIN	 1
