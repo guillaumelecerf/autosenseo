@@ -1,0 +1,55 @@
+
+CC5X Version 3.4D, Copyright (c) B Knudsen Data
+ * VARIABLE LIST FILE
+Source 'D:\projekte\picsel\autosenseo\autosen.c'
+Chip = 10F202
+
+Sorted by address.
+
+X    := P:direct assigned, L:local, G:global, E:extern, R:overlapping, C:const
+B    := bank
+Size := number of bytes
+#AC  := number of direct accesses
+
+ X  B  Address  Size  #AC   Name
+ P  -  0x000      1  :  0:  INDF
+ P  -  0x001      1  :  3:  TMR0
+ P  -  0x002      1  :  0:  PCL
+ P  -  0x003      1  :  0:  STATUS
+ P  -  0x003.0    0  :  6:  Carry
+ P  -  0x003.1    0  :  0:  DC
+ P  -  0x003.2    0  : 13:  Zero_
+ P  -  0x003.3    0  :  0:  PD
+ P  -  0x003.4    0  :  0:  TO
+ P  -  0x003.5    0  :  0:  PA0
+ P  -  0x003.6    0  :  0:  PA1
+ P  -  0x003.7    0  :  0:  PA2
+ P  -  0x003.7    0  :  0:  GPWUF
+ P  -  0x004      1  :  0:  FSR
+ P  -  0x004.5    0  :  0:  FSR_5
+ P  -  0x004.6    0  :  0:  FSR_6
+ P  -  0x005      1  :  0:  PORTA
+ P  -  0x005      1  :  0:  OSCCAL
+ P  -  0x005.0    0  :  0:  FOSC4
+ P  -  0x006      1  :  4:  PORTB
+ P  -  0x006      1  :  1:  GPIO
+ P  -  0x006.0    0  :  2:  GP0
+ P  -  0x006.1    0  :  2:  GP1
+ P  -  0x006.2    0  :  5:  GP2
+ P  -  0x006.3    0  :  7:  GP3
+ P  -  0x007      1  :  0:  PORTC
+ L  -  0x008      1  :  3:  chstate
+ G  -  0x009      1  : 20:  Status
+ G  -  0x00A      2  : 10:  Zeit
+ G  -  0x00C      2  :  9:  OffZeit
+ G  -  0x00E.0    0  :  5:  LED_referenz
+ G  -  0x00E.1    0  :  5:  Taste1m
+ G  -  0x00E.2    0  :  5:  Taste2m
+ G  -  0x00E.3    0  :  6:  Tmerker
+ G  -  0x00E.4    0  :  4:  Tester1
+ G  -  0x00E.5    0  :  4:  Tester2
+ G  -  0x00F      1  :  6:  ct0
+ G  -  0x010      1  :  4:  ct1
+ G  -  0x011      1  :  6:  i
+ G  -  0x012      1  :  5:  key_state
+ G  -  0x013      1  :  5:  key_press
