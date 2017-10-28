@@ -13,14 +13,15 @@
 /*                                                                  */
 /* V1.0  Erstausgabe                                                */
 /* V1.1  activated internal PUs, earlier Portinit for stability     */
-/* V1.2  Extrazeit nach doppelklick fuer Off-Timer                  */
+/* V1.2  Extrazeit nach Doppelklick fuer Off-Timer                  */
 /* V1.2a Config-Bits jetzt enthalten                                */
+/* V1.3  Sperrzeit gegen Fehlbedienung eingeführt                   */
 /*                                                                  */
 /*                                                                  */
 
 
-//#include <D:\projekte\picsel\cc5\10F202.h>
-#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
+#include <D:\projekte\picsel\cc5\10F202.h>
+//#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
 
 
 
@@ -46,6 +47,7 @@
 #define KLICKZEIT 488   /* ca. 0,5s - 500ms */
 #define TASTDRUCK 49    /* ca. 50ms */
 #define MAXOFFTIME 1270 /* ca. 1,3 s */
+#define MAXLOCKZEIT 4000 /* ca. 5 s */
 
 // Defines fuer Bit-Test Tastencodes
 #define TASTE1	1
@@ -56,12 +58,16 @@
 uns8 	Status;		// Zentrale Statusvariable
 uns16	Zeit;		// Universalvariable zum Zeitmessen
 uns16   OffZeit;	// Zeit bis Off-Zustand erkannt wird (wird runtergezählt)
+uns16 	OnZeit;		// Zeit bis Aufgeheizt-Zustand erkannt wird (wird runtergezählt)
+uns16	LockZeit;	// Zeit bis Lock freigegeben wird
 uns8	LED_referenz:1;	// Referenzmerker für die LED-Flankenerkennung
 uns8	Taste1m:1;	// Merker für Taste 1
 uns8	Taste2m:1;	// Merker für Taste 1
 uns8	Tmerker:1;	// Umschaltmerker T1/T2
 uns8	Tester1:1;	// Hilfsvariable 1
 uns8	Tester2:1;	// Hilfsvariable 1
+uns8	OldLED:1;	// Merker fuer alten LED-Status zur Flankenerkennung
+uns8	Lock:1;		// Autostart-Lock für MAXLOCKZEIT
 
 // Variablen für debouncing
 uns8 ct0, ct1;
@@ -92,6 +98,11 @@ void init(void)
 	
 	// Variablen
 	Status = RESTART;
+	OldLED = 0;
+	OnZeit = 0;
+	LockZeit = 0;
+	Lock = 0;
+	OffZeit = 0;
 }
 
 // Debouncing von Peter Dannegger
@@ -156,6 +167,7 @@ void OffTest(void)
 	{
 		// LED an, dann Uhr aufziehen
 		OffZeit	= MAXOFFTIME;
+			
 	}
 	else if (OffZeit > 0)
 	{
@@ -166,6 +178,52 @@ void OffTest(void)
 	{
 		Status = RESTART; // Off-Zustand erkannt: immer im RESET-Status hängenbleiben
 	}
+	
+}
+
+// Test auf Lock-Zustand
+// Wenn die LED länger als MAXOFFTIME eingeschaltet ist, wird Lock gesetzt und LockZeit auf Maxlockzeit aufgezogen
+// erst wenn die LED mal wieder aus ist, wird der OnZeit-Timer mal wieder gestartet & Lockzeit nicht mehr auf Max gesetzt,
+// so dass der Lockzeit-Timer abläuft und das Lock wieder freigegeben wird.
+void LockTest(void)
+{
+
+	if (LED_port)
+	{
+		// wenn vorher aus war, Zeitmessung starten
+		if (!OldLED)
+		{
+			OnZeit = MAXOFFTIME;
+		}
+		else if (OnZeit > 0)
+		{
+			// 
+			OnZeit--;
+		}
+		else // LED ist laenger als 1,3 s an -> Autostart sperren
+		{
+			Lock = 1;
+			LockZeit = MAXLOCKZEIT;
+		}
+			
+	}
+	else // LED ist  aus
+	{
+		// egal
+	}
+	
+	if (LockZeit > 0)
+	{
+		// 
+		LockZeit--;
+	}
+	else // Lockzeit ist abgelaufen, Lock freigeben
+	{
+		Lock = 0;
+	}
+	
+	// alten Zustand merken
+	OldLED = LED_port;
 	
 }
 
@@ -219,11 +277,16 @@ void main (void)
 		Zeit++;	
 		// Aus-Zustand immer abprüfen
 		OffTest();
+		// Lockzustand prüfen
+		LockTest();
 		
 		if (Status == BEGIN)
 		{
-			// Tastendruck testen 
-			Taste_testen(TPRESS1);
+			// Tastendruck testen, wenn nicht gelockt
+			if (!Lock)
+			{
+				Taste_testen(TPRESS1);
+			}
 			
 			// wenn Tastendruck T1 erkannt, Uhr starten, Taste merken
 			if (Taste1m)
