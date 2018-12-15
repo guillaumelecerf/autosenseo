@@ -1,8 +1,8 @@
 
-CC5X Version 3.5D, Copyright (c) B Knudsen Data
+CC5X Version 3.5G, Copyright (c) B Knudsen Data
  * VARIABLE LIST FILE
-Source 'D:\projekte\picsel\autosenseo\autosen.c'
-Chip = 10F202
+Source 'autosen.c'
+Chip = 12F509
 
 Sorted by address.
 
@@ -26,34 +26,34 @@ Size := number of bytes
  P  -  0x003.7    0  :  0:  GPWUF
  P  -  0x003.7    0  :  0:  PA2
  P  -  0x004      1  :  0:  FSR
- P  -  0x004.5    0  :  0:  FSR_5
+ P  -  0x004.5    0  :  6:  FSR_5
  P  -  0x004.6    0  :  0:  FSR_6
  P  -  0x005      1  :  0:  OSCCAL
  P  -  0x005      1  :  0:  PORTA
- P  -  0x005.0    0  :  0:  FOSC4
  P  -  0x006      1  :  4:  PORTB
  P  -  0x006      1  :  1:  GPIO
  P  -  0x006.0    0  :  2:  GP0
  P  -  0x006.1    0  :  2:  GP1
  P  -  0x006.2    0  :  5:  GP2
  P  -  0x006.3    0  :  9:  GP3
- P  -  0x007      1  :  0:  PORTC
- L  -  0x008      1  :  3:  chstate
- G  -  0x009      1  : 20:  Status
- G  -  0x00A      2  : 10:  Zeit
- G  -  0x00C      2  : 11:  OffZeit
- G  -  0x00E      2  :  9:  OnZeit
- G  -  0x010      2  :  9:  LockZeit
- G  -  0x012.0    0  :  5:  LED_referenz
- G  -  0x012.1    0  :  5:  Taste1m
- G  -  0x012.2    0  :  5:  Taste2m
- G  -  0x012.3    0  :  6:  Tmerker
- G  -  0x012.4    0  :  4:  Tester1
- G  -  0x012.5    0  :  4:  Tester2
- G  -  0x012.6    0  :  4:  OldLED
- G  -  0x012.7    0  :  4:  Lock
- G  -  0x013      1  :  6:  ct0
- G  -  0x014      1  :  4:  ct1
- G  -  0x015      1  :  6:  i
- G  -  0x016      1  :  5:  key_state
- G  -  0x017      1  :  5:  key_press
+ P  -  0x006.4    0  :  0:  GP4
+ P  -  0x006.5    0  :  0:  GP5
+ L  -  0x007      1  :  3:  chstate
+ G  -  0x008      1  : 20:  Status
+ G  -  0x009      2  : 10:  Zeit
+ G  -  0x00B      2  : 11:  OffZeit
+ G  -  0x00D      2  :  9:  OnZeit
+ G  -  0x00F.0    0  :  5:  LED_referenz
+ G  -  0x00F.1    0  :  5:  Taste1m
+ G  -  0x00F.2    0  :  5:  Taste2m
+ G  -  0x00F.3    0  :  6:  Tmerker
+ G  -  0x00F.4    0  :  4:  Tester1
+ G  -  0x00F.5    0  :  4:  Tester2
+ G  -  0x00F.6    0  :  4:  OldLED
+ G  -  0x00F.7    0  :  4:  Lock
+ G  0  0x010      2  :  9:  LockZeit
+ G  0  0x012      1  :  6:  ct0
+ G  0  0x013      1  :  4:  ct1
+ G  0  0x014      1  :  6:  i
+ G  0  0x015      1  :  5:  key_state
+ G  0  0x016      1  :  5:  key_press

@@ -20,12 +20,11 @@
 /*                                                                  */
 
 
-#include <D:\projekte\picsel\cc5\10F202.h>
-//#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
+#include "cc5x\12F509.h"
 
 
 
-#pragma config = 0x00D
+#pragma config = 0x00E // 1110
 // WD aktiv, kein ext. Reset, keine CP -> im Brenner gesetzt, INTRC=ON
 // undokumentiert: Bit0 ist das "INTRC"-Bit, das gesetzt sein muss, sonst meldet der Programmer einen Fehler!
 

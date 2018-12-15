@@ -1,26 +1,27 @@
 
-; CC5X Version 3.5D, Copyright (c) B Knudsen Data
+; CC5X Version 3.5G, Copyright (c) B Knudsen Data
 ; C compiler for the PICmicro family
-; ************  14. Nov 2018   7:41  *************
+; ************  15. Dec 2018  17:07  *************
 
-        processor  10F202
+        processor  12F509
         radix  DEC
 
-        __config 0xD
+        __config 0xE
 
 TMR0        EQU   0x01
 PORTB       EQU   0x06
 Carry       EQU   0
 Zero_       EQU   2
+FSR_5       EQU   5
 GPIO        EQU   0x06
 GP0         EQU   0
 GP1         EQU   1
 GP2         EQU   2
 GP3         EQU   3
-Status      EQU   0x09
-Zeit        EQU   0x0A
-OffZeit     EQU   0x0C
-OnZeit      EQU   0x0E
+Status      EQU   0x08
+Zeit        EQU   0x09
+OffZeit     EQU   0x0B
+OnZeit      EQU   0x0D
 LockZeit    EQU   0x10
 LED_referenz EQU   0
 Taste1m     EQU   1
@@ -30,16 +31,16 @@ Tester1     EQU   4
 Tester2     EQU   5
 OldLED      EQU   6
 Lock        EQU   7
-ct0         EQU   0x13
-ct1         EQU   0x14
-i           EQU   0x15
-key_state   EQU   0x16
-key_press   EQU   0x17
-chstate     EQU   0x08
+ct0         EQU   0x12
+ct1         EQU   0x13
+i           EQU   0x14
+key_state   EQU   0x15
+key_press   EQU   0x16
+chstate     EQU   0x07
 
         GOTO main
 
-  ; FILE D:\projekte\picsel\autosenseo\autosen.c
+  ; FILE autosen.c
                         ;/*    AUTOSEN Autostart-Nachruestung fuer SENSEO-Maschinen          */
                         ;/*                       __    _                                    */                     
                         ;/*            __________/ /_  (_)________   ___  __  __             */       
@@ -62,12 +63,11 @@ chstate     EQU   0x08
                         ;/*                                                                  */
                         ;
                         ;
-                        ;#include <D:\projekte\picsel\cc5\10F202.h>
-                        ;//#include <C:\Eigene_Dateien\pic\cc5x\10F202.h>
+                        ;#include "cc5x\12F509.h"
                         ;
                         ;
                         ;
-                        ;#pragma config = 0x00D
+                        ;#pragma config = 0x00E // 1110
                         ;// WD aktiv, kein ext. Reset, keine CP -> im Brenner gesetzt, INTRC=ON
                         ;// undokumentiert: Bit0 ist das "INTRC"-Bit, das gesetzt sein muss, sonst meldet der Programmer einen Fehler!
                         ;
@@ -143,6 +143,7 @@ init
                         ;	// Entprellung zurücksetzen
                         ;	key_state = 0xFF;
         MOVLW 255
+        BCF   0x04,FSR_5
         MOVWF key_state
                         ;	ct0 = key_state;
         MOVF  key_state,W
@@ -156,7 +157,7 @@ init
         MOVLW 7
         MOVWF Status
                         ;	OldLED = 0;
-        BCF   0x12,OldLED
+        BCF   0x0F,OldLED
                         ;	OnZeit = 0;
         CLRF  OnZeit
         CLRF  OnZeit+1
@@ -164,7 +165,7 @@ init
         CLRF  LockZeit
         CLRF  LockZeit+1
                         ;	Lock = 0;
-        BCF   0x12,Lock
+        BCF   0x0F,Lock
                         ;	OffZeit = 0;
         CLRF  OffZeit
         CLRF  OffZeit+1
@@ -177,6 +178,7 @@ init
 debounce
                         ;  i = key_state ^ ~GPIO;	// key changed ?
         COMF  GPIO,W
+        BCF   0x04,FSR_5
         XORWF key_state,W
         MOVWF i
                         ;  ct0 = ~( ct0 & i );		// reset or count ct0
@@ -209,11 +211,12 @@ debounce
 Taste_testen
         MOVWF chstate
                         ;	if (key_press & TASTE1)
+        BCF   0x04,FSR_5
         BTFSS key_press,0
         GOTO  m001
                         ;	{
                         ;		Taste1m = 1;		// merken: Taste 1 war es
-        BSF   0x12,Taste1m
+        BSF   0x0F,Taste1m
                         ;		Status = chstate;	// Sollstatus uebernehmen
         MOVF  chstate,W
         MOVWF Status
@@ -225,15 +228,16 @@ Taste_testen
         GOTO  m002
                         ;	{
                         ;		Taste1m = 0;
-m001    BCF   0x12,Taste1m
+m001    BCF   0x0F,Taste1m
                         ;	}
                         ;	
                         ;	if (key_press & TASTE2)
-m002    BTFSS key_press,1
+m002    BCF   0x04,FSR_5
+        BTFSS key_press,1
         GOTO  m003
                         ;	{
                         ;		Taste2m = 1;		// merken: Taste 2 war es
-        BSF   0x12,Taste2m
+        BSF   0x0F,Taste2m
                         ;		Status = chstate;	// Sollstatus uebernehmen
         MOVF  chstate,W
         MOVWF Status
@@ -245,7 +249,7 @@ m002    BTFSS key_press,1
         GOTO  m004
                         ;	{
                         ;		Taste2m = 0;
-m003    BCF   0x12,Taste2m
+m003    BCF   0x0F,Taste2m
                         ;	}	
                         ;}
 m004    RETLW 0
@@ -336,7 +340,7 @@ LockTest
                         ;	{
                         ;		// wenn vorher aus war, Zeitmessung starten
                         ;		if (!OldLED)
-        BTFSC 0x12,OldLED
+        BTFSC 0x0F,OldLED
         GOTO  m010
                         ;		{
                         ;			OnZeit = MAXOFFTIME;
@@ -363,9 +367,10 @@ m010    MOVF  OnZeit,W
         GOTO  m012
                         ;		{
                         ;			Lock = 1;
-m011    BSF   0x12,Lock
+m011    BSF   0x0F,Lock
                         ;			LockZeit = MAXLOCKZEIT;
         MOVLW 160
+        BCF   0x04,FSR_5
         MOVWF LockZeit
         MOVLW 15
         MOVWF LockZeit+1
@@ -379,7 +384,8 @@ m012    GOTO  m013
                         ;	}
                         ;	
                         ;	if (LockZeit > 0)
-m013    MOVF  LockZeit,W
+m013    BCF   0x04,FSR_5
+        MOVF  LockZeit,W
         IORWF LockZeit+1,W
         BTFSC 0x03,Zero_
         GOTO  m014
@@ -395,14 +401,14 @@ m013    MOVF  LockZeit,W
         GOTO  m015
                         ;	{
                         ;		Lock = 0;
-m014    BCF   0x12,Lock
+m014    BCF   0x0F,Lock
                         ;	}
                         ;	
                         ;	// alten Zustand merken
                         ;	OldLED = LED_port;
-m015    BCF   0x12,OldLED
+m015    BCF   0x0F,OldLED
         BTFSC 0x06,GP3
-        BSF   0x12,OldLED
+        BSF   0x0F,OldLED
                         ;	
                         ;}
         RETLW 0
@@ -414,7 +420,7 @@ m015    BCF   0x12,OldLED
 Taste_an
                         ;	// Je nach Taste 1/2 Puls setzen	
                         ;	if (Tmerker)
-        BTFSS 0x12,Tmerker
+        BTFSS 0x0F,Tmerker
         GOTO  m016
                         ;	{
                         ;		Taste_akt2 = 0;		// LOW anlegen
@@ -445,7 +451,7 @@ Taste_aus
                         ;					
                         ;	// Je nach Taste 1/2 Puls wieder loeschen
                         ;	if (Tmerker)
-        BTFSS 0x12,Tmerker
+        BTFSS 0x0F,Tmerker
         GOTO  m018
                         ;	{
                         ;		Taste_akt2 = 1;		// High anlegen	
@@ -497,7 +503,7 @@ m020    CLRWDT
                         ;		{
                         ;			// Tastendruck testen, wenn nicht gelockt
                         ;			if (!Lock)
-        BTFSC 0x12,Lock
+        BTFSC 0x0F,Lock
         GOTO  m021
                         ;			{
                         ;				Taste_testen(TPRESS1);
@@ -507,25 +513,25 @@ m020    CLRWDT
                         ;			
                         ;			// wenn Tastendruck T1 erkannt, Uhr starten, Taste merken
                         ;			if (Taste1m)
-m021    BTFSS 0x12,Taste1m
+m021    BTFSS 0x0F,Taste1m
         GOTO  m022
                         ;			{
                         ;				Uhr_starten();
         CALL  Uhr_starten
                         ;				Tmerker = 0;
-        BCF   0x12,Tmerker
+        BCF   0x0F,Tmerker
                         ;			}
                         ;			
                         ;			// wenn Tastendruck T2 erkannt, Uhr starten, Taste merken
                         ;			else if (Taste2m)
         GOTO  m023
-m022    BTFSS 0x12,Taste2m
+m022    BTFSS 0x0F,Taste2m
         GOTO  m023
                         ;			{
                         ;				Uhr_starten();
         CALL  Uhr_starten
                         ;				Tmerker = 1;
-        BSF   0x12,Tmerker
+        BSF   0x0F,Tmerker
                         ;			}
                         ;		}
                         ;		// Zustand nach Taste 1x gedrückt
@@ -543,23 +549,23 @@ m024    MOVF  Status,W
                         ;			
                         ;			// Bitvariablen ausrechnen (Compilerbeschraenkung, geht nicht im if() )
                         ;			Tester1 = !Tmerker;
-        BSF   0x12,Tester1
-        BTFSC 0x12,Tmerker
-        BCF   0x12,Tester1
+        BSF   0x0F,Tester1
+        BTFSC 0x0F,Tmerker
+        BCF   0x0F,Tester1
                         ;			Tester1 &= Taste1m;
-        BTFSS 0x12,Taste1m
-        BCF   0x12,Tester1
+        BTFSS 0x0F,Taste1m
+        BCF   0x0F,Tester1
                         ;			Tester2 = Taste2m;
-        BCF   0x12,Tester2
-        BTFSC 0x12,Taste2m
-        BSF   0x12,Tester2
+        BCF   0x0F,Tester2
+        BTFSC 0x0F,Taste2m
+        BSF   0x0F,Tester2
                         ;			Tester2 &= Tmerker;
-        BTFSS 0x12,Tmerker
-        BCF   0x12,Tester2
+        BTFSS 0x0F,Tmerker
+        BCF   0x0F,Tester2
                         ;			
                         ;			// wenn gleicher Tastendruck erkannt, nächster State
                         ;			if (Tester1)
-        BTFSS 0x12,Tester1
+        BTFSS 0x0F,Tester1
         GOTO  m025
                         ;			{
                         ;				Status = TPRESS2;
@@ -568,7 +574,7 @@ m024    MOVF  Status,W
                         ;			}
                         ;			else if (Tester2)
         GOTO  m028
-m025    BTFSS 0x12,Tester2
+m025    BTFSS 0x0F,Tester2
         GOTO  m026
                         ;			{
                         ;				Status = TPRESS2;
@@ -604,9 +610,9 @@ m028    MOVF  Status,W
         GOTO  m029
                         ;		{		
                         ;			LED_referenz=LED_port;
-        BCF   0x12,LED_referenz
+        BCF   0x0F,LED_referenz
         BTFSC 0x06,GP3
-        BSF   0x12,LED_referenz
+        BSF   0x0F,LED_referenz
                         ;			Uhr_starten();
         CALL  Uhr_starten
                         ;			Status = LED_WAIT;
@@ -649,7 +655,7 @@ m030    BSF   0x06,GP2
                         ;			
                         ;			// wenn sich der LED-Zustand geändert hat, neu starten
                         ;			if (LED_referenz != LED_port)
-m031    BTFSC 0x12,LED_referenz
+m031    BTFSC 0x0F,LED_referenz
         GOTO  m032
         BTFSC 0x06,GP3
         GOTO  m033
@@ -658,9 +664,9 @@ m032    BTFSC 0x06,GP3
         GOTO  m034
                         ;			{
                         ;				LED_referenz=LED_port;
-m033    BCF   0x12,LED_referenz
+m033    BCF   0x0F,LED_referenz
         BTFSC 0x06,GP3
-        BSF   0x12,LED_referenz
+        BSF   0x0F,LED_referenz
                         ;				Uhr_starten();
         CALL  Uhr_starten
                         ;			}	
@@ -750,9 +756,9 @@ m040    MOVF  Status,W
         GOTO  m041
                         ;		{
                         ;			Taste1m = 0; /* beide Tastenmerker zuruecksetzen */
-        BCF   0x12,Taste1m
+        BCF   0x0F,Taste1m
                         ;			Taste2m = 0;
-        BCF   0x12,Taste2m
+        BCF   0x0F,Taste2m
                         ;			Status = BEGIN;
         MOVLW 1
         MOVWF Status
@@ -767,17 +773,19 @@ m041    GOTO  m020
 
 ; *** KEY INFO ***
 
-; 0x0001   23 word(s)  4 % : init
-; 0x0018   20 word(s)  3 % : debounce
-; 0x002C   20 word(s)  3 % : Taste_testen
-; 0x0040    4 word(s)  0 % : Uhr_starten
-; 0x0044    7 word(s)  1 % : wait1ms
-; 0x004B   19 word(s)  3 % : OffTest
-; 0x005E   38 word(s)  7 % : LockTest
-; 0x0084   10 word(s)  1 % : Taste_an
-; 0x008E    8 word(s)  1 % : Taste_aus
-; 0x0096  150 word(s) 29 % : main
+; 0x0001 P0   24 word(s)  4 % : init
+; 0x0019 P0   21 word(s)  4 % : debounce
+; 0x002E P0   22 word(s)  4 % : Taste_testen
+; 0x0044 P0    4 word(s)  0 % : Uhr_starten
+; 0x0048 P0    7 word(s)  1 % : wait1ms
+; 0x004F P0   19 word(s)  3 % : OffTest
+; 0x0062 P0   40 word(s)  7 % : LockTest
+; 0x008A P0   10 word(s)  1 % : Taste_an
+; 0x0094 P0    8 word(s)  1 % : Taste_aus
+; 0x009C P0  150 word(s) 29 % : main
 
-; RAM usage: 16 bytes (1 local), 8 bytes free
+; RAM usage: 16 bytes (1 local), 25 bytes free
 ; Maximum call level: 1
-; Total of 300 code words (58 %)
+;  Codepage 0 has  306 word(s) :  59 %
+;  Codepage 1 has    0 word(s) :   0 %
+; Total of 306 code words (29 %)
