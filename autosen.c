@@ -16,7 +16,7 @@
 /* V1.2  Extrazeit nach Doppelklick fuer Off-Timer                  */
 /* V1.2a Config-Bits jetzt enthalten                                */
 /* V1.3  Sperrzeit gegen Fehlbedienung eingeführt                   */
-/*                                                                  */
+/* V1.31 Laengere Tastendruck-Zeit für neue Senseos                 */
 /*                                                                  */
 
 
@@ -45,7 +45,7 @@
 #define MSWAIT    4  /* Counterstand für 1ms */
 #define BLINKZEIT 1172  /* ca. 1,2s */
 #define KLICKZEIT 488   /* ca. 0,5s - 500ms */
-#define TASTDRUCK 49    /* ca. 50ms */
+#define TASTDRUCK 200    /* ca. 200ms */
 #define MAXOFFTIME 1270 /* ca. 1,3 s */
 #define MAXLOCKZEIT 4000 /* ca. 5 s */
 
